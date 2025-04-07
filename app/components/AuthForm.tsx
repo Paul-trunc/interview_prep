@@ -1,33 +1,37 @@
 "use client";
 
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm } from "react-hook-form";
 import { z } from "zod";
-import Image from "next/image";
 import Link from "next/link";
+import Image from "next/image";
 import { toast } from "sonner";
-import FormField from "./FormField";
+import { auth } from "@/firebase/client";
+import { useForm } from "react-hook-form";
 import { useRouter } from "next/navigation";
+import { zodResolver } from "@hookform/resolvers/zod";
 
-import { Button } from "@/components/ui/button";
+import {
+  createUserWithEmailAndPassword,
+  signInWithEmailAndPassword,
+} from "firebase/auth";
+
 import { Form } from "@/components/ui/form";
+import { Button } from "@/components/ui/button";
 
-const AuthFormSchema = (type: FormType) => {
+import { signIn, signUp } from "@/lib/auth.action";
+import FormField from "./FormField";
+
+const authFormSchema = (type: FormType) => {
   return z.object({
-    name:
-      type === "sign-up"
-        ? z.string().min(4, { message: "Name must contain 4 characters" })
-        : z.string().optional(),
+    name: type === "sign-up" ? z.string().min(3) : z.string().optional(),
     email: z.string().email(),
-    password: z
-      .string()
-      .min(8, { message: "Password must contain 8 characters" }),
+    password: z.string().min(3),
   });
 };
 
 const AuthForm = ({ type }: { type: FormType }) => {
   const router = useRouter();
-  const formSchema = AuthFormSchema(type);
+
+  const formSchema = authFormSchema(type);
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -37,24 +41,62 @@ const AuthForm = ({ type }: { type: FormType }) => {
     },
   });
 
-  function onSubmit(values: z.infer<typeof formSchema>) {
+  const onSubmit = async (data: z.infer<typeof formSchema>) => {
     try {
       if (type === "sign-up") {
-        console.log("SIGN UP", values);
+        const { name, email, password } = data;
+
+        const userCredential = await createUserWithEmailAndPassword(
+          auth,
+          email,
+          password
+        );
+
+        const result = await signUp({
+          uid: userCredential.user.uid,
+          name: name!,
+          email,
+          password,
+        });
+
+        if (!result.success) {
+          toast.error(result.message);
+          return;
+        }
+
         toast.success("Account created successfully. Please sign in.");
         router.push("/sign-in");
       } else {
-        console.log("SIGN IN", values);
-        toast.success("Logged in successfully.");
+        const { email, password } = data;
+
+        const userCredential = await signInWithEmailAndPassword(
+          auth,
+          email,
+          password
+        );
+
+        const idToken = await userCredential.user.getIdToken();
+        if (!idToken) {
+          toast.error("Sign in Failed. Please try again.");
+          return;
+        }
+
+        await signIn({
+          email,
+          idToken,
+        });
+
+        toast.success("Signed in successfully.");
+        router.push("/");
       }
     } catch (error) {
-      console.log(values);
-      toast.error(`there was an error ${error}`);
+      console.log(error);
+      toast.error(`There was an error: ${error}`);
     }
-  }
+  };
 
-  const isSign = type === "sign-in";
-  console.log(isSign);
+  const isSignIn = type === "sign-in";
+
   return (
     <div className="card-border lg:min-w-[566px]">
       <div className="flex flex-col gap-6 card py-14 px-10">
@@ -62,13 +104,15 @@ const AuthForm = ({ type }: { type: FormType }) => {
           <Image src="/logo.svg" alt="logo" height={32} width={38} />
           <h2 className="text-primary-100">InterviewPrep</h2>
         </div>
-        <h3>Job Interview Practice with AI powered Tools</h3>
+
+        <h3>Practice interviews powered by AI.</h3>
+
         <Form {...form}>
           <form
             onSubmit={form.handleSubmit(onSubmit)}
             className="w-full space-y-6 mt-4 form"
           >
-            {!isSign && (
+            {!isSignIn && (
               <FormField
                 control={form.control}
                 name="name"
@@ -77,33 +121,36 @@ const AuthForm = ({ type }: { type: FormType }) => {
                 type="text"
               />
             )}
+
             <FormField
               control={form.control}
               name="email"
               label="Email"
-              placeholder="Your Email"
+              placeholder="Your email address"
               type="email"
             />
+
             <FormField
               control={form.control}
               name="password"
               label="Password"
-              placeholder="Your Password"
+              placeholder="Enter your password"
               type="password"
             />
+
             <Button className="btn" type="submit">
-              {isSign ? "Sign In" : "Create an Account"}
+              {isSignIn ? "Sign In" : "Create an Account"}
             </Button>
           </form>
         </Form>
 
         <p className="text-center">
-          {isSign ? "Don't have an account?" : "Already have an account?"}{" "}
+          {isSignIn ? "No account yet?" : "Have an account already?"}
           <Link
-            href={!isSign ? "/sign-in" : "/sign-up"}
+            href={!isSignIn ? "/sign-in" : "/sign-up"}
             className="font-bold text-user-primary ml-1"
           >
-            {!isSign ? "Sign In" : "Create an Account"}
+            {!isSignIn ? "Sign In" : "Sign Up"}
           </Link>
         </p>
       </div>
