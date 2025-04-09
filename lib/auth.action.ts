@@ -94,6 +94,14 @@ export async function signOut() {
   const cookieStore = await cookies();
 
   cookieStore.delete("session");
+  const user = await getCurrentUser();
+  if (user) {
+    try {
+    } catch (error) {
+      console.error("Error during sign-out process:", error);
+    }
+  }
+  return { success: true, message: "You have been signed out." };
 }
 
 // Get current user from session cookie
@@ -105,6 +113,10 @@ export async function getCurrentUser(): Promise<User | null> {
 
   try {
     const decodedClaims = await auth.verifySessionCookie(sessionCookie, true);
+
+    if (!decodedClaims?.uid) {
+      return null;
+    }
 
     // get user info from db
     const userRecord = await db
@@ -118,9 +130,8 @@ export async function getCurrentUser(): Promise<User | null> {
       id: userRecord.id,
     } as User;
   } catch (error) {
-    console.log(error);
+    console.error("Error getting current user:", error);
 
-    // Invalid or expired session
     return null;
   }
 }

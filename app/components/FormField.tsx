@@ -26,37 +26,66 @@ interface FormFieldProps<T extends FieldValues> {
   >;
 }
 
+// const FormField = <T extends FieldValues>({
+//   control,
+//   name,
+//   label,
+//   placeholder,
+//   type = "text",
+//   rules = { required: "This field is required" } as Omit<
+//     RegisterOptions<T, Path<T>>,
+//     "setValueAs" | "disabled" | "valueAsNumber" | "valueAsDate"
+//   >,
+// }: FormFieldProps<T>) => (
+
+//   <Controller
+//     name={name}
+//     control={control}
+//     rules={rules}
+//     render={({ field, fieldState }) => (
+//       <FormItem>
+//         <FormLabel className="label">{label}</FormLabel>
+//         <FormControl>
+//           <Input
+//             className="input"
+//             placeholder={placeholder}
+//             type={type}
+//             {...field}
+//           />
+//         </FormControl>
+//         {/* <FormDescription>This is your public display name.</FormDescription> */}
+//         <FormMessage>{fieldState?.error?.message}</FormMessage>
+//       </FormItem>
+//     )}
+//   />
+// );
 const FormField = <T extends FieldValues>({
   control,
   name,
   label,
   placeholder,
   type = "text",
-  rules = { required: "This field is required" } as Omit<
-    RegisterOptions<T, Path<T>>,
-    "setValueAs" | "disabled" | "valueAsNumber" | "valueAsDate"
-  >,
-}: FormFieldProps<T>) => (
-  <Controller
-    name={name}
-    control={control}
-    rules={rules}
-    render={({ field, fieldState }) => (
-      <FormItem>
-        <FormLabel className="label">{label}</FormLabel>
-        <FormControl>
-          <Input
-            className="input"
-            placeholder={placeholder}
-            type={type}
-            {...field}
-          />
-        </FormControl>
-        {/* <FormDescription>This is your public display name.</FormDescription> */}
-        <FormMessage>{fieldState?.error?.message}</FormMessage>
-      </FormItem>
-    )}
-  />
-);
+}: FormFieldProps<T>) => {
+  return (
+    <Controller
+      control={control}
+      name={name}
+      render={({ field }) => (
+        <FormItem>
+          <FormLabel className="label">{label}</FormLabel>
+          <FormControl>
+            <Input
+              className="input"
+              type={type}
+              placeholder={placeholder}
+              {...field}
+            />
+          </FormControl>
+          <FormMessage />
+        </FormItem>
+      )}
+    />
+  );
+};
 
 export default FormField;

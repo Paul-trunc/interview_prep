@@ -8,6 +8,8 @@ import { auth } from "@/firebase/client";
 import { useForm } from "react-hook-form";
 import { useRouter } from "next/navigation";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useState } from "react";
+import { FaEye, FaEyeSlash } from "react-icons/fa";
 
 import {
   createUserWithEmailAndPassword,
@@ -40,6 +42,8 @@ const AuthForm = ({ type }: { type: FormType }) => {
       password: "",
     },
   });
+
+  const [isPasswordVisible, setIsPasswordVisible] = useState(false);
 
   const onSubmit = async (data: z.infer<typeof formSchema>) => {
     try {
@@ -130,13 +134,36 @@ const AuthForm = ({ type }: { type: FormType }) => {
               type="email"
             />
 
-            <FormField
+            {/* <FormField
               control={form.control}
               name="password"
               label="Password"
               placeholder="Enter your password"
               type="password"
-            />
+            /> */}
+            <div className="relative">
+              {/* Password FormField */}
+              <FormField
+                control={form.control}
+                name="password"
+                label="Password"
+                placeholder="Enter your password"
+                type={isPasswordVisible ? "text" : "password"}
+              />
+
+              {/* Eye icon toggle */}
+              <button
+                type="button"
+                className="absolute right-2 top-1/2 transform -translate-y-1/2 mt-[10px]"
+                onClick={() => setIsPasswordVisible((prev) => !prev)}
+              >
+                {isPasswordVisible ? (
+                  <FaEyeSlash className="w-6 h-6 text-gray-500" />
+                ) : (
+                  <FaEye className="w-6 h-6 text-gray-500" />
+                )}
+              </button>
+            </div>
 
             <Button className="btn" type="submit">
               {isSignIn ? "Sign In" : "Create an Account"}

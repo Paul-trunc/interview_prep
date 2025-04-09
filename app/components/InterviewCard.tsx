@@ -1,12 +1,13 @@
 import React from "react";
 import dayjs from "dayjs";
 import Image from "next/image";
-import { getRandomInterviewCover } from "@/lib/utils";
+import { cn, getRandomInterviewCover } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import DisplayTechIcons from "./DisplayTechIcons";
+import { getFeedbackByInterviewId } from "@/lib/general.action";
 
-const InterviewCard = ({
+const InterviewCard = async ({
   id,
   userId,
   role,
@@ -14,68 +15,85 @@ const InterviewCard = ({
   techstack,
   createdAt,
 }: InterviewCardProps) => {
-  const feedback = null as Feedback | null;
+  // const feedback = null as Feedback | null;
+  const feedback =
+    userId && id
+      ? await getFeedbackByInterviewId({
+          interviewId: id,
+          userId,
+        })
+      : null;
   const normalizedType = /mix/gi.test(type) ? "Mixed" : type;
+
+  const badgeColor =
+    {
+      Behavioral: "bg-light-400",
+      Mixed: "bg-light-600",
+      Technical: "bg-light-800",
+    }[normalizedType] || "bg-light-600";
+
   const formattedDate = dayjs(
     feedback?.createdAt || createdAt || Date.now()
-  ).format("DD/MM/YYYY"); //Formatted at dayjs library @ npm install dayjs
+  ).format("MMM D, YYYY"); //Formatted at dayjs library @ npm install dayjs  {/* Date Format */}
 
   return (
-    <div className="card-border w-full sm:w-[360px] min-h-96 flex flex-col bg-white shadow-lg rounded-lg overflow-hidden">
-      <div className="relative p-5">
-        {/* Badge */}
-        <div className="absolute top-0 right-0 w-fit px-4 py-2 rounded-bl-lg bg-light-600">
-          <p className="badge-text">{normalizedType}</p>
-        </div>
-
-        {/* Interview Cover Image */}
-        <Image
-          src={getRandomInterviewCover()}
-          alt="cover image"
-          width={90}
-          height={90}
-          className="rounded-full object-cover"
-        />
-
-        {/* Role and Date Information */}
-        <h3 className="mt-5 capitalize text-xl font-semibold">
-          {role} Interview
-        </h3>
-        <div className="flex gap-5 mt-3">
-          <div className="flex flex-col gap-2">
-            <Image
-              src="/calendar.svg"
-              alt="calendar"
-              width={22}
-              height={22}
-              className="object-fit"
-            />
-            <p>{formattedDate}</p>
-          </div>
-
-          <div className="flex gap-2 items-center">
-            <Image src="/star.svg" alt="star" width={22} height={22} />
-            <p>{feedback?.totalScore || "---"}/100</p>
-          </div>
-        </div>
-
-        {/* Feedback or Message */}
-        <p className="line-clamp-2 mt-5 text-sm text-gray-600">
-          {feedback?.finalAssessment ||
-            "You haven't taken any interviews yet. Take it now to improve your skills"}
-        </p>
-      </div>
-
-      {/* Tech Stack and Button */}
-      <div className="flex justify-between p-5 border-t">
-        <DisplayTechIcons techStack={techstack} />
-        <Button className="btn-primary">
-          <Link
-            href={feedback ? `/interview/${id}/feedback` : `/interview/${id}`}
+    <div className="card-border w-[360px] max-sm:w-full min-h-96">
+      <div className="card-interview">
+        <div>
+          {/* Badge */}
+          <div
+            className={cn(
+              "absolute top-0 right-0 w-fit px-4 py-2 rounded-bl-lg",
+              badgeColor
+            )}
           >
-            {feedback ? "Check Feedback" : "View Interview"}
-          </Link>
-        </Button>
+            <p className="badge-text">{normalizedType}</p>
+          </div>
+          {/* Interview Cover Image */}
+          <Image
+            src={getRandomInterviewCover()}
+            alt="cover image"
+            width={90}
+            height={90}
+            className="rounded-full object-fit size-[90px]"
+          />
+          {/* Role and Date Information */}
+          <h3 className="mt-5 capitalize">{role} Interview</h3>
+
+          <div className="flex flex-row gap-5 mt-3">
+            <div className="flex flex-row gap-2">
+              <Image
+                src="/calendar.svg"
+                alt="calendar"
+                width={22}
+                height={22}
+                // className="object-fit"
+              />
+              <p>{formattedDate}</p>
+            </div>
+
+            <div className="flex flex-row gap-2 items-center">
+              <Image src="/star.svg" alt="star" width={22} height={22} />
+              <p>{feedback?.totalScore || "---"}/100</p>
+            </div>
+          </div>
+          {/* Feedback or Placeholder Text */}
+          <p className="line-clamp-2 mt-5">
+            {feedback?.finalAssessment ||
+              "You haven't taken any interviews yet. Take it now to improve your skills"}
+          </p>
+        </div>
+        {/* Tech Stack and Button */}
+        <div className="flex flex-row justify-between">
+          <DisplayTechIcons techStack={techstack} />
+          <Button className="btn-primary">
+            <Link
+              href={feedback ? `/interview/${id}/feedback` : `/interview/${id}`}
+            >
+              {feedback ? "Check Feedback" : "View Interview"}
+            </Link>
+          </Button>
+        </div>
       </div>
     </div>
   );
