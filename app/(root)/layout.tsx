@@ -24,22 +24,26 @@ const RootLayout = ({ children }: { children: ReactNode }) => {
   };
 
   return (
-    <div className="root-layout">
-      <nav>
+    <>
+      <div className="flex justify-between items-center p-4">
         <Link href="/" className="flex items-center gap-2">
-          <Image src="/logo.svg" alt="Logo" width={38} height={32} />
-          <h2 className="text-primary-100">InterviewPrep</h2>
+          <Image src="/robot.png" alt="Logo" width={30} height={30} />
+          <h3>InterviewPrep</h3>
         </Link>
-        <button
-          onClick={handleSignOut}
-          className="absolute top-4 right-4 flex items-center gap-2 px-4 py-2 bg-primary-600 text-white rounded-md"
-          disabled={isLoggingOut} // Disable button during sign-out process
-        >
-          {isLoggingOut ? "Logging out..." : "Sign Out"}
-        </button>
-      </nav>
-      {children}
-    </div>
+      </div>
+      <div className="root-layout mt-[0]">
+        <nav>
+          <button
+            onClick={handleSignOut}
+            className="absolute top-4 right-4 flex items-center gap-2 px-4 py-2 bg-primary-600 text-white rounded-md"
+            disabled={isLoggingOut} // Disable button during sign-out process
+          >
+            {isLoggingOut ? "Logging out..." : "Sign Out"}
+          </button>
+        </nav>
+        {children}
+      </div>
+    </>
   );
 };
 

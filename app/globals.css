@@ -24,7 +24,7 @@
 
   --font-mona-sans: "Mona Sans", sans-serif;
 
-  --bg-pattern: url("/pattern.jpg");
+  --bg-pattern: url("/pattern.png");
 }
 
 :root {
@@ -187,13 +187,21 @@
 
   .card-border {
     @apply border-gradient p-0.5 rounded-2xl w-fit;
+    /* changes */
+    /* background-color: transparent; */
   }
 
   .card {
-    @apply dark-gradient rounded-2xl min-h-full;
-    /* setting transparent */
-    background-color: transparent;
+    @apply blue-gradient-dark rounded-2xl min-h-full;
+    /* changes setting transparent */
+    /* @apply backdrop-blur-md bg-white/10 rounded-2xl; */
+    /* @apply rounded-2xl min-h-full backdrop-blur-md border border-white/10;
+    background-color: rgba(255, 255, 255, 0.1); */
   }
+
+  /* .text-gradient {
+    @apply blue-gradient-dark bg-clip-text text-transparent;
+  } */
 
   .form {
     @apply w-full;

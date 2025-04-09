@@ -102,14 +102,14 @@ const AuthForm = ({ type }: { type: FormType }) => {
   const isSignIn = type === "sign-in";
 
   return (
-    <div className="card-border lg:min-w-[566px]">
-      <div className="flex flex-col gap-6 card py-14 px-10">
+    <div className="card-border bg-transparent lg:min-w-[566px]">
+      <div className="flex flex-col gap-6 card bg-transparent py-14 px-10">
         <div className="flex flex-row gap-2 justify-center">
-          <Image src="/logo.svg" alt="logo" height={32} width={38} />
           <h2 className="text-primary-100">InterviewPrep</h2>
+          <Image src="/robot.png" alt="logo" height={50} width={50} />
         </div>
 
-        <h3>Practice interviews powered by AI.</h3>
+        <h3>AI-Enhanced Interview Practice Platform</h3>
 
         <Form {...form}>
           <form
@@ -134,13 +134,6 @@ const AuthForm = ({ type }: { type: FormType }) => {
               type="email"
             />
 
-            {/* <FormField
-              control={form.control}
-              name="password"
-              label="Password"
-              placeholder="Enter your password"
-              type="password"
-            /> */}
             <div className="relative">
               {/* Password FormField */}
               <FormField

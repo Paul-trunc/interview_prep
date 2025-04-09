@@ -28,10 +28,8 @@ const page = async () => {
     <>
       <section className="card-cta">
         <div className="flex flex-col gap-6 max-w-lg">
-          <h2>Get Interview-Ready for AI-Powered Practice & Feedback</h2>
-          <p className="text-lg">
-            Practice Real Interview Questions & get instant feedback with AI.
-          </p>
+          <h3>Get Interview-Ready for AI-Powered Practice & Feedback</h3>
+          <p className="text-lg">Practice Real Interview Questions with AI.</p>
 
           <Button asChild className="btn-primary max-sm:w-full">
             <Link href="/interview">Start an Interview</Link>
@@ -41,8 +39,8 @@ const page = async () => {
         <Image
           src="/robot.png"
           alt="robo-dude"
-          width={400}
-          height={400}
+          width={250}
+          height={250}
           className="max-sm:hidden"
         />
       </section>
